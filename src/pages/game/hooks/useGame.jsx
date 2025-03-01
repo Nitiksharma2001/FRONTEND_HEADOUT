@@ -7,7 +7,7 @@ export default function useGame() {
   const { user } = useContext(MainContext)
   const navigate = useNavigate()
   const [data, setData] = useState()
-  const [resultData, setResultData] = useState({})
+  const [resultData, setResultData] = useState()
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -38,7 +38,6 @@ export default function useGame() {
       const { friendsScore, selfScore } = await getScore(user.username)
       setData({ game, countries, selfScore, friendsScore })
     }
-
     getData()
   }, [])
   return { data, checkAnswer, resultData, isButtonDisabled, isLoading }
