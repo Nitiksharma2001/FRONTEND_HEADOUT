@@ -1,28 +1,46 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import useGame from './hooks/useGame'
 import SadAnime from '../../components/animations/sad/sad'
 import ConfettiAnime from '../../components/animations/confetti/confetti'
+import { MainContext } from '../../context'
 
 export default function MainGame() {
-  const { data, checkAnswer, resultData, isButtonDisabled, isLoading } = useGame()
-  const [answer, setAnswer] = useState('')
+  const { data, checkAnswer, resultData, isButtonDisabled, isLoading, updateSelection } = useGame()
+  const { user, updateUser, updateToast } = useContext(MainContext)
 
   if (!data) return
   const { game, countries, selfScore, friendsScore } = data
+
+  function inviteLink() {
+    const link = import.meta.env.VITE_FRONTEND_URL + '/' + user.username
+    navigator.clipboard.writeText(link)
+    updateToast('invite link copied')
+  }
   return (
     <>
       {resultData && (resultData.result.correct ? <ConfettiAnime /> : <SadAnime />)}
       <div className='h-full p-4'>
-        <div className='flex justify-between'>
+        <div className='flex justify-between flex-wrap'>
           <div className='flex gap-4'>
-            {friendsScore.map((score, i) => (
-              <div className='text-black font-bold text-xl' key={i}>
-                Friend-{i} Score: {score}
+            {friendsScore.map(({ score, username }, i) => (
+              <div
+                className='text-black font-bold text-xl flex flex-col justify-center items-center'
+                key={i}>
+                {username} <span className='font-normal'>Score: {score}</span>
               </div>
             ))}
-            <div className='text-black font-bold text-xl'>My Score: {selfScore}</div>
           </div>
-          <button className='btn btn-accent btn-lg text-white capitalize'>invite</button>
+          <div className='text-black font-bold text-xl'>My Score: {selfScore}</div>
+          <div className='flex gap-4'>
+            <button onClick={inviteLink} className='btn btn-accent btn-base text-white capitalize'>
+              invite
+            </button>
+            <button
+              onClick={() => updateUser('')}
+              className='btn btn-accent btn-base text-white capitalize'>
+              signout
+            </button>
+          </div>
         </div>
         <div className='flex flex-col justify-center items-center h-[80%]'>
           <div className='flex flex-col justify-center items-center gap-4'>
@@ -38,7 +56,7 @@ export default function MainGame() {
                 <span className='label-text'>Select the country</span>
               </div>
               <select
-                onChange={(e) => setAnswer(e.target.value)}
+                onChange={(e) => updateSelection(e.target.value)}
                 className='select select-bordered'>
                 {countries.map((country) => (
                   <option key={country} value={country}>
@@ -50,7 +68,7 @@ export default function MainGame() {
             <div className='flex justify-between gap-4 w-full'>
               <button
                 disabled={isButtonDisabled || isLoading}
-                onClick={() => checkAnswer(game.alias, answer)}
+                onClick={() => checkAnswer(game.alias)}
                 className='btn btn-primary capitalize text-white w-1/2'>
                 check
               </button>
@@ -62,6 +80,9 @@ export default function MainGame() {
               </button>
             </div>
           </div>
+          {/* {resultData.map(({ funcFacts }) => (
+            <></>
+          ))} */}
         </div>
       </div>
     </>

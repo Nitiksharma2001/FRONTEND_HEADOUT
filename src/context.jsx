@@ -11,12 +11,15 @@ function ContextWrapper({ children }) {
     setToastMessage(text)
     setTimeout(() => {
       setToastMessage('')
-    }, 1000)
+    }, 2000)
   }
 
   function updateUser(user) {
     localStorage.setItem('user', JSON.stringify(user))
     setUser(user)
+    if (user === '') {
+      window.location.reload()
+    }
   }
 
   return (

@@ -6,8 +6,9 @@ import { MainContext } from '../../context'
 export default function Home() {
   const { updateToast, updateUser } = useContext(MainContext)
   const { username: inviteUsername } = useParams()
-  const [isUniqueUsername, setIsUniqueUsername] = useState(false)
+  const [isUniqueUsername, setIsUniqueUsername] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
+  const [validInvite, setIsValidInvite] = useState(false)
   const username = useRef()
   const navigate = useNavigate()
   const { user } = useContext(MainContext)
@@ -20,12 +21,30 @@ export default function Home() {
     const { exist } = await response.json()
     setIsUniqueUsername(!exist)
   }
-
-  async function onCreateUsername() {
+  async function onSignin() {
+    const uniqueUsername = username.current.value
     setIsLoading(true)
     try {
-      const uniqueUsername = username.current.value
-      const friends = [inviteUsername]
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/' + uniqueUsername, {
+        method: 'get',
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+      const { user } = await response.json()
+      updateUser(user)
+      navigate('/game')
+      username.current.value = ''
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  async function onCreateUsername() {
+    const uniqueUsername = username.current.value
+    if (!uniqueUsername) return
+    setIsLoading(true)
+    try {
+      const friends = validInvite ? [inviteUsername] : []
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/', {
         method: 'post',
         body: JSON.stringify({ username: uniqueUsername, friends }),
@@ -39,9 +58,7 @@ export default function Home() {
       if (user) {
         updateUser(user)
       }
-
       navigate('/game')
-
       username.current.value = ''
     } finally {
       setIsLoading(false)
@@ -50,15 +67,23 @@ export default function Home() {
 
   useEffect(() => {
     if (user) return navigate('/game')
+
+    async function validInvite(text) {
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/exists/' + text)
+      const { exist } = await response.json()
+      setIsValidInvite(exist)
+    }
+    validInvite(inviteUsername)
   }, [])
   return (
     <div className='flex justify-center items-center h-full text-black'>
-      <div className='space-y-8 content-center'>
-        {inviteUsername && (
+      <div className='space-y-4 content-center'>
+        {validInvite && (
           <div className='text-3xl font-bold capitalize'>
             you have been invited by <span className='lowercase'>{inviteUsername}</span>
           </div>
         )}
+
         <div className='flex flex-row gap-4'>
           <input
             ref={username}
@@ -73,9 +98,18 @@ export default function Home() {
             className={`capitalize ${
               isLoading && 'loading loading-spinner'
             } btn btn-primary text-white`}>
-            play game
+            sign up
+          </button>
+          <button
+            disabled={isUniqueUsername}
+            onClick={onSignin}
+            className={`capitalize ${
+              isLoading && 'loading loading-spinner'
+            } btn btn-primary text-white`}>
+            sign in
           </button>
         </div>
+        <div className='text-green-400'>{!isUniqueUsername && 'username already exists'}</div>
       </div>
     </div>
   )
