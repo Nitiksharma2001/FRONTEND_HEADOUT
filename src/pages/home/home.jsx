@@ -23,15 +23,20 @@ export default function Home() {
 
   async function onCreateUsername() {
     setIsLoading(true)
+    let headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+    headers.append('Accept', 'application/json')
+    headers.append('Origin', import.meta.env.VITE_BACKEND_URL)
+
     try {
       const uniqueUsername = username.current.value
       const friends = [inviteUsername]
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/', {
         method: 'post',
         body: JSON.stringify({ username: uniqueUsername, friends }),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
+        headers: headers,
+        mode: 'cors',
+        credentials: 'include',
       })
       const { message, user } = await response.json()
 
