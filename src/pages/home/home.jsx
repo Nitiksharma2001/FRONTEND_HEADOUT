@@ -16,7 +16,15 @@ export default function Home() {
 
   async function checkUniqueUsername(text) {
     if (!text) return
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/exists/' + text)
+    let headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+    headers.append('Accept', 'application/json')
+    headers.append('Origin', import.meta.env.VITE_BACKEND_URL)
+    const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/exists/' + text, {
+      headers: headers,
+      mode: 'cors',
+      credentials: 'include',
+    })
     const { exist } = await response.json()
     setIsUniqueUsername(!exist)
   }
