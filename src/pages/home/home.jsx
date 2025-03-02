@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { searchDebounceHandler } from '../../helpers/debounce'
 import { MainContext } from '../../context'
+import axios from 'axios'
 
 export default function Home() {
   const { updateToast, updateUser } = useContext(MainContext)
@@ -16,35 +17,22 @@ export default function Home() {
 
   async function checkUniqueUsername(text) {
     if (!text) return
-    let headers = new Headers()
-    headers.append('Content-Type', 'application/json')
-    headers.append('Accept', 'application/json')
-    headers.append('Origin', import.meta.env.VITE_BACKEND_URL)
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/exists/' + text, {
-      headers: headers,
-      mode: 'no-cors',
-      credentials: 'include',
-    })
-    const { exist } = await response.json()
-    setIsUniqueUsername(!exist)
+    const { data } = await axios.get(import.meta.env.VITE_BACKEND_URL + '/user/exists/' + text)
+    const { exist } = data
+    setIsUniqueUsername(!exist) 
   }
 
   async function onCreateUsername() {
     setIsLoading(true)
-    let headers = new Headers()
-    headers.append('Content-Type', 'application/json')
-    headers.append('Accept', 'application/json')
-    headers.append('Origin', import.meta.env.VITE_BACKEND_URL)
-
     try {
       const uniqueUsername = username.current.value
       const friends = [inviteUsername]
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/', {
         method: 'post',
         body: JSON.stringify({ username: uniqueUsername, friends }),
-        headers: headers,
-        mode: 'cors',
-        credentials: 'include',
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
       })
       const { message, user } = await response.json()
 
