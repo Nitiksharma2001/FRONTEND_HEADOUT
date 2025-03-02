@@ -22,7 +22,7 @@ export default function Home() {
     headers.append('Origin', import.meta.env.VITE_BACKEND_URL)
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/exists/' + text, {
       headers: headers,
-      mode: 'cors',
+      mode: 'no-cors',
       credentials: 'include',
     })
     const { exist } = await response.json()
