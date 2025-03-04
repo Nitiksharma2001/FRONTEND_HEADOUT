@@ -1,10 +1,11 @@
 import { useState, createContext, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export const MainContext = createContext()
 
 function ContextWrapper({ children }) {
   const navigate = useNavigate()
+  const { inviteUsername } = useParams()
   const localUser = localStorage.getItem('user')
   const [toastMessage, setToastMessage] = useState('')
   const [user, setUser] = useState(localUser ? JSON.parse(localUser) : undefined)
@@ -20,14 +21,9 @@ function ContextWrapper({ children }) {
     localStorage.setItem('user', JSON.stringify(user))
     setUser(user)
     if (user === '') {
-      window.location.reload()
+      navigate('/')
     }
   }
-
-  useEffect(() => {
-    if (user) return navigate('/game')
-    else navigate('/')
-  }, [])
 
   return (
     <MainContext.Provider value={{ user, toastMessage, updateToast, updateUser }}>

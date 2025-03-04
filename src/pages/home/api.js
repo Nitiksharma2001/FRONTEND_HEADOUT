@@ -1,7 +1,7 @@
-export async function createUser(username, friends) {
+export async function createUser(username, friendsUsernames) {
   const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/user/', {
     method: 'post',
-    body: JSON.stringify({ username, friends }),
+    body: JSON.stringify({ username, friendsUsernames }),
     headers: {
       'Content-type': 'application/json; charset=UTF-8',
     },

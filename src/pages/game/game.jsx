@@ -8,8 +8,8 @@ export default function MainGame() {
   const { data, checkAnswer, resultData, isButtonDisabled, isLoading, updateSelection } = useGame()
   const { user, updateUser, updateToast } = useContext(MainContext)
 
-  if (!data) return
-
+  if (!data) return isLoading && <div className='h-full flex justify-center items-center'><div className='loading loading-spinner loading-lg'></div></div>
+  
   const { game, countries, selfScore, friendsScore } = data
 
   function inviteLink() {

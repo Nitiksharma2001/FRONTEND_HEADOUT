@@ -3,8 +3,7 @@ import useHome from './useHome'
 
 export default function Home() {
   const { inviteUsername } = useParams()
-  const { isLoading, isValidInvite, isUniqueUsername, onSignin, onCreateUsername, debouce } =
-    useHome()
+  const { isLoading, isValidInvite, onCreateUsername, debouce } = useHome()
 
   return (
     <div className='flex justify-center items-center h-full text-black'>
@@ -22,23 +21,13 @@ export default function Home() {
             onChange={(e) => debouce(e.target.value)}
           />
           <button
-            disabled={!isUniqueUsername}
             onClick={onCreateUsername}
             className={`capitalize ${
               isLoading && 'loading loading-spinner'
             } btn btn-primary text-white`}>
-            sign up
-          </button>
-          <button
-            disabled={isUniqueUsername}
-            onClick={onSignin}
-            className={`capitalize ${
-              isLoading && 'loading loading-spinner'
-            } btn btn-primary text-white`}>
-            sign in
+            start game
           </button>
         </div>
-        <div className='text-green-400'>{!isUniqueUsername && 'username already exists'}</div>
       </div>
     </div>
   )

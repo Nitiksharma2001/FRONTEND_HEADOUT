@@ -28,11 +28,16 @@ export default function useGame() {
 
   useEffect(() => {
     async function getData() {
-      const { game } = await getGame(user.username)
-      const { countries } = await getCountries(user.username)
-      const { friendsScore, selfScore } = await getScore(user.username)
-      setAnswer(countries[0])
-      setData({ game, countries, selfScore, friendsScore })
+      setIsLoading(true)
+      try {
+        const { game } = await getGame(user.username)
+        const { countries } = await getCountries(user.username)
+        const { friendsScore, selfScore } = await getScore(user.username)
+        setAnswer(countries[0])
+        setData({ game, countries, selfScore, friendsScore })
+      } finally {
+        setIsLoading(false)
+      }
     }
     getData()
   }, [])
