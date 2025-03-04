@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import useGame from './hooks/useGame'
+import React, { useContext } from 'react'
+import useGame from './useGame'
 import SadAnime from '../../components/animations/sad/sad'
 import ConfettiAnime from '../../components/animations/confetti/confetti'
 import { MainContext } from '../../context'
@@ -9,6 +9,7 @@ export default function MainGame() {
   const { user, updateUser, updateToast } = useContext(MainContext)
 
   if (!data) return
+
   const { game, countries, selfScore, friendsScore } = data
 
   function inviteLink() {
@@ -16,9 +17,9 @@ export default function MainGame() {
     navigator.clipboard.writeText(link)
     updateToast('invite link copied')
   }
+
   return (
     <>
-      {resultData && (resultData.result.correct ? <ConfettiAnime /> : <SadAnime />)}
       <div className='h-full p-4'>
         <div className='flex justify-between flex-wrap'>
           <div className='flex gap-4'>
@@ -42,15 +43,17 @@ export default function MainGame() {
             </button>
           </div>
         </div>
-        <div className='flex flex-col justify-center items-center h-[80%]'>
-          <div className='flex flex-col justify-center items-center gap-4'>
-            <ul className='steps steps-vertical text-white'>
-              {game.clues.map((clue, i) => (
-                <li key={i} className='step step-primary text-black'>
-                  {clue}
-                </li>
-              ))}
-            </ul>
+        <div className='flex flex-col justify-center items-center h-[80%] gap-8'>
+          <div className='flex flex-col justify-center items-center gap-4 relative'>
+            <div className='flex'>
+              <ul className='steps steps-vertical text-white'>
+                {game.clues.map((clue, i) => (
+                  <li key={i} className='step step-primary text-black'>
+                    {clue}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <label className='form-control w-full'>
               <div className='label'>
                 <span className='label-text'>Select the country</span>
@@ -80,9 +83,21 @@ export default function MainGame() {
               </button>
             </div>
           </div>
-          {/* {resultData.map(({ funcFacts }) => (
-            <></>
-          ))} */}
+          {resultData && (
+            <div className='flex gap-8 mt-8'>
+              {resultData && (resultData.result.correct ? <ConfettiAnime /> : <SadAnime />)}
+              <div className='flex flex-col'>
+                <div className='mx-auto text-xl font-bold text-black'>Fun Facts</div>
+                <ul className='steps steps-vertical text-white'>
+                  {resultData.funFacts.map((fact, i) => (
+                    <li key={i} className='step step-primary text-black'>
+                      {fact}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

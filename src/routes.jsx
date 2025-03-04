@@ -10,7 +10,7 @@ export const routes = [
   },
   {
     name: 'home',
-    route: '/:username',
+    route: '/:inviteUsername',
     component: <Home />,
   },
   {
